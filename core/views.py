@@ -2,8 +2,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AdminPasswordChangeForm, PasswordChangeForm, UserCreationForm
 from django.contrib.auth import update_session_auth_hash, login, authenticate
 from django.contrib import messages
+from urllib.request import urlopen
+import json
 from django.shortcuts import render, redirect
-
 from social_django.models import UserSocialAuth
 
 def signup(request):
@@ -21,9 +22,9 @@ def signup(request):
         form = UserCreationForm()
     return render(request, 'registration/signup.html', {'form': form})
 
-@login_required
+#@login_required
 def home(request):
-    return render(request, 'core/home.html')
+    return render(request, 'app.html')
 
 @login_required
 def settings(request):
@@ -39,9 +40,12 @@ def settings(request):
         twitter_login = None
     try:
         facebook_login = user.social_auth.get(provider='facebook')
+        social_user = request.user.social_auth.filter(provider='facebook',).first()
+        if social_user:
+            url = u'https://graph.facebook.com/{0}/friends?fields=id,name,location,picture&access_token={1}'.format(social_user.uid,social_user.extra_data['access_token'],)
+            friends = json.loads(urlopen(url).read()).get('data')
     except:
         facebook_login = None
-
     can_disconnect = (user.social_auth.count() > 1 or user.has_usable_password())
 
     return render(request, 'core/settings.html', {

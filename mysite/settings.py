@@ -25,7 +25,7 @@ SECRET_KEY = '3!b6#%wm+@e39$a(#xh3@0#17d!#44maz61$=e+%p)9&d=cvc('
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['mysite.com']
 
 
 # Application definition
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'core',
+    'django.contrib.humanize',
 ]
 
 MIDDLEWARE = [
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'mysite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, '/core/templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,6 +80,32 @@ AUTHENTICATION_BACKENDS = (
 
     'django.contrib.auth.backends.ModelBackend',
 )
+
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'METHOD': 'oauth2',
+        'SCOPE': ['email', 'public_profile', 'user_friends'],
+        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
+        'INIT_PARAMS': {'cookie': True},
+        'FIELDS': [
+            'id',
+            'email',
+            'name',
+            'first_name',
+            'last_name',
+            'verified',
+            'locale',
+            'timezone',
+            'link',
+            'gender',
+            'updated_time',
+        ],
+        'EXCHANGE_TOKEN': True,
+        'LOCALE_FUNC': 'path.to.callable',
+        'VERIFIED_EMAIL': False,
+        'VERSION': 'v2.12',
+    }
+}
 
 WSGI_APPLICATION = 'mysite.wsgi.application'
 
@@ -139,4 +166,25 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/settings/'
 SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 SOCIAL_AUTH_FACEBOOK_KEY = '399225187213168'
 SOCIAL_AUTH_FACEBOOK_SECRET = '742dabd8a486a4230be824e9149df751'
+SOCIAL_AUTH_FACEBOOK_SCOPE = [
+    'email',
+    'user_friends',
+    'user_age_range',
+    'user_birthday',
+    'user_gender',
+    'user_hometown',
+    'user_link',
+    'user_location',
+    'user_likes',
+    'user_photos',
+    'user_posts',
+    'user_tagged_places',
+    'user_videos',
+    'user_events',
+]
+
 ROOT_URLCONF = 'mysite.urls'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = (
+    os.path.join(BASE_DIR)
+)
